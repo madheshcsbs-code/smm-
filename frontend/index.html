@@ -625,6 +625,7 @@
       display: block;
     }
   </style>
+  <link rel="stylesheet" href="mobile-first.css">
 </head>
 
 <body>
@@ -704,10 +705,15 @@
   <!-- ============================== -->
   <div id="dashboard" class="hidden">
     <nav class="nav">
-      <div class="logo">insta<span>boost</span></div>
+      <div class="nav-profile">
+        <div class="profile-pic" id="navAvatar">U</div>
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <span id="navName" style="font-size:14px; font-weight:700; color:#fff;">Welcome</span>
+          <span style="font-size:11px; color:var(--muted); line-height: 1;">Premium User</span>
+        </div>
+      </div>
       <div class="nav-right">
         <div class="balance-chip">💰 ₹<span id="navBalance">0.00</span></div>
-        <span id="navName" style="font-size:14px;color:var(--muted)"></span>
         <button class="logout-btn" onclick="doLogout()">Logout</button>
       </div>
     </nav>
@@ -872,26 +878,9 @@
         <!-- ORDERS PANEL -->
         <div id="panel-orders" class="page">
           <div class="page-title">My Orders</div>
-          <div class="page-sub">Track all your orders here</div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>#ID</th>
-                  <th>Service</th>
-                  <th>Link</th>
-                  <th>Qty</th>
-                  <th>Charge</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody id="ordersTable">
-                <tr>
-                  <td colspan="7" style="text-align:center;color:var(--muted);padding:32px">Loading orders...</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="page-sub">Track all your active and past orders</div>
+          <div id="ordersTable" style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+            <div style="text-align:center;color:var(--muted);padding:32px">Loading orders...</div>
           </div>
         </div>
 
@@ -957,23 +946,8 @@
         <div id="panel-transactions" class="page">
           <div class="page-title">Transactions</div>
           <div class="page-sub">Your wallet recharge history</div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>#ID</th>
-                  <th>Amount</th>
-                  <th>Transaction ID / UTR</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody id="txnTable">
-                <tr>
-                  <td colspan="5" style="text-align:center;color:var(--muted);padding:32px">Loading...</td>
-                </tr>
-              </tbody>
-            </table>
+          <div id="txnTable" style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+            <div style="text-align:center;color:var(--muted);padding:32px">Loading...</div>
           </div>
         </div>
 
@@ -1240,8 +1214,23 @@
           </div>
         </div>
 
-      </div>
+      </div> <!-- End main -->
+    </div> <!-- End layout -->
+
+    <!-- BOTTOM NAV FOR MOBILE -->
+    <div class="bottom-nav">
+      <a class="bnav-item active" onclick="showPanel('home'); focusBNav(this)"><span class="icon">🏠</span>Home</a>
+      <a class="bnav-item" onclick="showPanel('newOrder'); focusBNav(this)"><span class="icon">➕</span>Order</a>
+      <a class="bnav-item" onclick="showPanel('orders'); focusBNav(this)"><span class="icon">📋</span>History</a>
+      <a class="bnav-item" onclick="showPanel('wallet'); focusBNav(this)"><span class="icon">💳</span>Wallet</a>
+      <a class="bnav-item" onclick="doLogout()"><span class="icon">👋</span>Logout</a>
     </div>
+    <script>
+      function focusBNav(elem) {
+        document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+        elem.classList.add('active');
+      }
+    </script>
   </div>
 
   <script>
@@ -1836,23 +1825,26 @@
     // =============================================
     async function loadOrders() {
       const data = await api('/orders');
-      const tbody = document.getElementById('ordersTable');
+      const tbody = document.getElementById('ordersTable'); // Using original ID to prevent conflicts
       if (!data.success || !data.orders.length) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px">No orders yet</td></tr>';
+        tbody.innerHTML = '<div style="text-align:center; color:var(--muted); padding:40px; background:rgba(255,255,255,0.03); border-radius:16px;">No orders found</div>';
         return;
       }
       tbody.innerHTML = data.orders.map(o => `
-    <tr>
-      <td>#${o.id}</td>
-      <td>${o.service_name}</td>
-      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-        <a href="${o.link}" target="_blank" style="color:var(--accent)">${o.link}</a>
-      </td>
-      <td>${o.quantity.toLocaleString()}</td>
-      <td>₹${parseFloat(o.charge).toFixed(2)}</td>
-      <td><span class="status-badge s-${o.status}">${o.status}</span></td>
-      <td style="color:var(--muted)">${o.created_at?.slice(0, 10)}</td>
-    </tr>`).join('');
+    <div style="background: rgba(20,20,25,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); padding: 16px; border-radius: 16px; display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: start;">
+        <div style="font-size: 14px; font-weight: 600; color: #fff; line-height:1.4;">${o.service_name}</div>
+        <span class="status-badge s-${o.status}" style="font-size:10px; margin-left: 12px; flex-shrink: 0;">${o.status.toUpperCase()}</span>
+      </div>
+      <div style="font-size: 13px; color: var(--muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+        🔗 <a href="${o.link}" target="_blank" style="color:var(--accent); text-decoration:none;">${o.link}</a>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05);">
+        <div style="font-size: 12px; color: var(--muted);">Qty: <span style="color:#fff; font-weight:600;">${o.quantity.toLocaleString()}</span></div>
+        <div style="font-size: 15px; font-weight: 700; color: var(--accent);">₹${parseFloat(o.charge).toFixed(2)}</div>
+      </div>
+      <div style="font-size: 11px; color: var(--muted); position:absolute; top: 16px; right: 16px; display:none;">${o.created_at?.slice(0, 10)}</div>
+    </div>`).join('');
     }
 
     // =============================================
@@ -1860,19 +1852,25 @@
     // =============================================
     async function loadTransactions() {
       const data = await api('/transactions');
-      const tbody = document.getElementById('txnTable');
+      const tbody = document.getElementById('txnTable'); // Using original ID
       if (!data.success || !data.transactions.length) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px">No transactions yet</td></tr>';
+        tbody.innerHTML = '<div style="text-align:center; color:var(--muted); padding:40px; background:rgba(255,255,255,0.03); border-radius:16px;">No transactions found</div>';
         return;
       }
       tbody.innerHTML = data.transactions.map(t => `
-    <tr>
-      <td>#${t.id}</td>
-      <td style="color:var(--green);font-weight:600">₹${parseFloat(t.amount).toFixed(2)}</td>
-      <td style="color:var(--muted);font-size:12px">${t.razorpay_payment_id || '-'}</td>
-      <td><span class="status-badge s-${t.status}">${t.status}</span></td>
-      <td style="color:var(--muted)">${t.created_at?.slice(0, 10)}</td>
-    </tr>`).join('');
+    <div style="background: rgba(20,20,25,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); padding: 16px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between;">
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <span style="font-size:12px; color:var(--muted);">UPI Reference UTR</span>
+        <span style="font-family:monospace; color:#fff; font-size:13px; font-weight:600;">${t.razorpay_payment_id || 'N/A'}</span>
+        <span style="font-size:10px; color:var(--muted); margin-top: 2px;">${t.created_at?.slice(0, 10) || ''}</span>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+        <span style="font-size:18px; font-weight:700; color: ${t.status === 'paid' ? 'var(--green)' : (t.status === 'rejected' ? 'var(--red)' : '#ffc800')};">
+          ${t.status === 'paid' ? '+' : ''}₹${parseFloat(t.amount).toFixed(2)}
+        </span>
+        <span class="status-badge s-${t.status}" style="font-size:9px; padding:2px 8px;">${t.status.toUpperCase()}</span>
+      </div>
+    </div>`).join('');
     }
 
     // =============================================
