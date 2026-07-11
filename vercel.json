@@ -25,6 +25,8 @@
     "SMM_API_URL": "https://cheapestsmmpanels.com/api/v2",
     "SMM_API_KEY": "666a5abee5093be52b9765c5d21019cf",
     "ADMIN_UPI_ID": "akcreates@axl",
-    "GOOGLE_CLIENT_ID": "1035655383562-fakeclientid.apps.googleusercontent.com"
+    "GOOGLE_CLIENT_ID": "1035655383562-fakeclientid.apps.googleusercontent.com",
+    "SUPABASE_URL": "https://aaijxlksgwhbxuchevgm.supabase.co",
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhamp4bGtzZ3doYnh1Y2hldmdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODI1NTMsImV4cCI6MjA5OTM1ODU1M30.pzZj2K_8migqJEMbjqjOUoGwxz0CY3RxUiE6xwTPeSg"
   }
 }
