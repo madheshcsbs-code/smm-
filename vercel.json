@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "frontend/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
+    }
+  ],
+  "env": {
+    "PORT": "3000",
+    "SMM_API_URL": "https://cheapestsmmpanels.com/api/v2",
+    "SMM_API_KEY": "666a5abee5093be52b9765c5d21019cf",
+    "ADMIN_UPI_ID": "akcreates@axl",
+    "GOOGLE_CLIENT_ID": "1035655383562-fakeclientid.apps.googleusercontent.com"
+  }
+}
