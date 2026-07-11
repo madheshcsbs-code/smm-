@@ -33,6 +33,150 @@
       min-height: 100vh;
     }
 
+    /* ---- SERVICE CARDS BROWSER ---- */
+    .category-slider {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      scrollbar-width: thin;
+    }
+
+    .category-slider::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .category-slider::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    .cat-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 10px 16px;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 13px;
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s ease, background 0.3s, border-color 0.3s;
+    }
+
+    .cat-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .cat-btn.active {
+      background: rgba(0, 212, 255, 0.1);
+      border-color: rgba(0, 212, 255, 0.5);
+      color: #00d4ff;
+      text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 212, 255, 0.15);
+    }
+
+    .service-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      min-height: 150px;
+      transition: opacity 0.2s ease;
+    }
+
+    @media(max-width: 1024px) {
+      .service-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media(max-width: 600px) {
+      .service-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .srv-card {
+      background: rgba(20, 20, 20, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .srv-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0, 212, 255, 0.4);
+      box-shadow: 0 8px 24px rgba(0, 212, 255, 0.1);
+    }
+
+    .srv-card.selected {
+      background: linear-gradient(145deg, rgba(0, 212, 255, 0.1), rgba(108, 99, 255, 0.05));
+      border-color: #00d4ff;
+      box-shadow: 0 0 0 1px #00d4ff inset, 0 8px 24px rgba(0, 212, 255, 0.2);
+    }
+
+    .srv-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #fff;
+      line-height: 1.4;
+    }
+
+    .srv-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: #00d4ff;
+      margin-bottom: 12px;
+    }
+
+    .srv-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .srv-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .srv-tag i {
+      margin-right: 4px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #fff;
+      outline: none;
+      margin-bottom: 16px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .search-box input:focus {
+      border-color: rgba(0, 212, 255, 0.5);
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+    }
+
     /* ---- NAV ---- */
     .nav {
       display: flex;
@@ -679,15 +823,31 @@
                 <option value="other">🌐 Other Services</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">Select Service</label>
+            <!-- Hidden original select to preserve core logic dependencies -->
+            <div style="display: none!important;">
               <select class="form-select" id="serviceSelect" onchange="updateServiceInfo()">
                 <option value="">Loading...</option>
               </select>
             </div>
-            <div id="serviceInfo"
-              style="background:rgba(108,99,255,0.06);border:0.5px solid rgba(108,99,255,0.2);border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:var(--muted);display:none;">
+
+            <div id="serviceInfo" style="display:none!important;">
               <span id="svcInfoText"></span>
+            </div>
+
+            <!-- New Premium Service Browser -->
+            <div id="customServiceBrowser" style="margin-bottom: 24px; padding-top: 8px;">
+              <div id="categorySlider" class="category-slider">
+                <!-- Category Tabs injected by JS -->
+              </div>
+
+              <div class="search-box">
+                <input type="text" id="serviceSearch" oninput="filterServices()"
+                  placeholder="🔍 Search specific services within this category..." />
+              </div>
+
+              <div id="serviceCardsList" class="service-cards-grid">
+                <!-- Cards injected by JS -->
+              </div>
             </div>
             <div class="form-group">
               <label class="form-label">Profile / Post Link</label>
@@ -1444,11 +1604,36 @@
       if (data.success) { servicesCache[platform] = data.services; renderServices(platform); }
     }
 
+    let currentCategory = 'Followers';
+    let browserServices = [];
+    const CATEGORIES = [
+      { name: 'Followers', icon: '👥' },
+      { name: 'Likes', icon: '❤️' },
+      { name: 'Views', icon: '👁️' },
+      { name: 'Comments', icon: '💬' },
+      { name: 'Story Views', icon: '📖' },
+      { name: 'Reels Views', icon: '🎬' },
+      { name: 'Saves', icon: '💾' },
+      { name: 'Shares', icon: '🔄' },
+      { name: 'Reach', icon: '📈' },
+      { name: 'Live Views', icon: '🔴' },
+      { name: 'Custom Comments', icon: '✏️' },
+      { name: 'Other Services', icon: '🛠️' }
+    ];
+
     function getServiceCategory(name) {
       const n = name.toLowerCase();
       if (n.includes('follower')) return 'Followers';
       if (n.includes('like')) return 'Likes';
+      if (n.includes('story') || n.includes('stories')) return 'Story Views';
+      if (n.includes('reel') && (n.includes('view') || n.includes('play'))) return 'Reels Views';
+      if (n.includes('live')) return 'Live Views';
       if (n.includes('view') || n.includes('play')) return 'Views';
+      if (n.includes('custom comment')) return 'Custom Comments';
+      if (n.includes('comment')) return 'Comments';
+      if (n.includes('save') || n.includes('saves')) return 'Saves';
+      if (n.includes('share') || n.includes('shares')) return 'Shares';
+      if (n.includes('reach') || n.includes('impression')) return 'Reach';
       return 'Other Services';
     }
 
@@ -1456,41 +1641,123 @@
       const sel = document.getElementById('serviceSelect');
       sel.innerHTML = '<option value="">Select a service</option>';
 
-      // Show only working services that are connected to the provider API
       const workingServices = servicesCache[platform].filter(s => s.provider_service_id !== null && s.provider_service_id !== '');
-
-      const groups = {
-        'Followers': [],
-        'Likes': [],
-        'Views': [],
-        'Other Services': []
-      };
+      browserServices = workingServices;
 
       workingServices.forEach(s => {
-        const cat = getServiceCategory(s.name);
-        groups[cat].push(s);
+        const orig = s.original_rate !== undefined && s.original_rate !== null ? s.original_rate : (s.rate / 1.80);
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.dataset.rate = s.rate;
+        opt.dataset.original = orig;
+        opt.dataset.min = s.min_qty;
+        opt.dataset.max = s.max_qty;
+        opt.dataset.delivery = s.delivery_time;
+        opt.textContent = `${s.name} — ₹${parseFloat(s.rate).toFixed(2)}/1000`;
+        sel.appendChild(opt);
       });
 
-      for (const [groupName, services] of Object.entries(groups)) {
-        if (services.length === 0) continue;
-        const optGroup = document.createElement('optgroup');
-        optGroup.label = groupName;
+      // Default category fallback handling
+      let hasFollowers = browserServices.some(s => getServiceCategory(s.name) === 'Followers');
+      currentCategory = hasFollowers ? 'Followers' : (CATEGORIES[getServiceCategory(browserServices?.[0]?.name || '')]?.name || 'Other Services');
+      if (browserServices.length === 0) currentCategory = 'Followers';
 
-        services.forEach(s => {
-          const orig = s.original_rate !== undefined && s.original_rate !== null ? s.original_rate : (s.rate / 1.80);
-          const opt = document.createElement('option');
-          opt.value = s.id;
-          opt.dataset.rate = s.rate;
-          opt.dataset.original = parseFloat(orig).toFixed(4);
-          opt.dataset.min = s.min_qty;
-          opt.dataset.max = s.max_qty;
-          opt.dataset.delivery = s.delivery_time;
-          opt.textContent = `${s.name} — ₹${parseFloat(s.rate).toFixed(2)}/1000`;
-          optGroup.appendChild(opt);
-        });
-        sel.appendChild(optGroup);
+      renderCategoryTabs();
+      filterServices();
+      updateServiceInfo();
+    }
+
+    function renderCategoryTabs() {
+      const slider = document.getElementById('categorySlider');
+      if (!slider) return;
+      slider.innerHTML = '';
+      CATEGORIES.forEach(cat => {
+        // Skip rendering category if it has no services (optional cleaner UI)
+        if (!browserServices.some(s => getServiceCategory(s.name) === cat.name)) return;
+
+        const btn = document.createElement('button');
+        btn.className = 'cat-btn' + (currentCategory === cat.name ? ' active' : '');
+        btn.innerHTML = `${cat.icon} ${cat.name}`;
+        btn.onclick = () => {
+          currentCategory = cat.name;
+          document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById('serviceSearch').value = '';
+
+          const grid = document.getElementById('serviceCardsList');
+          grid.style.opacity = '0';
+          setTimeout(() => {
+            filterServices();
+            grid.style.opacity = '1';
+          }, 200);
+        };
+        slider.appendChild(btn);
+      });
+    }
+
+    function filterServices() {
+      const search = document.getElementById('serviceSearch').value.toLowerCase();
+      let filtered = browserServices.filter(s => getServiceCategory(s.name) === currentCategory);
+
+      if (search) {
+        filtered = filtered.filter(s => s.name.toLowerCase().includes(search));
       }
 
+      // Sort by price DESC
+      filtered.sort((a, b) => parseFloat(b.rate) - parseFloat(a.rate));
+
+      renderCards(filtered);
+    }
+
+    function renderCards(services) {
+      const list = document.getElementById('serviceCardsList');
+      if (!list) return;
+      list.innerHTML = '';
+      if (services.length === 0) {
+        list.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding: 40px; color:var(--muted); background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid rgba(255,255,255,0.05);">No services found in this category.</div>`;
+        return;
+      }
+
+      const currentSelectedId = document.getElementById('serviceSelect').value;
+
+      services.forEach(s => {
+        const isSelected = String(s.id) === String(currentSelectedId);
+
+        let badge = '⭐⭐⭐⭐⭐ Premium';
+        let fastStatus = '🚀 10K/Day';
+
+        if (s.name.toLowerCase().includes('instant')) { badge = '⚡ Fast Delivery'; fastStatus = '⚡ Instant Start'; }
+        if (s.name.toLowerCase().includes('cheap')) badge = '💰 Best Value';
+        if (s.name.toLowerCase().includes('real')) badge = '✅ 100% Real';
+
+        const card = document.createElement('div');
+        card.className = 'srv-card' + (isSelected ? ' selected' : '');
+        card.onclick = () => selectServiceCard(s.id, card);
+
+        const ratePer1k = parseFloat(s.rate).toFixed(2);
+        const maxPretty = s.max_qty >= 1000000 ? (s.max_qty / 1000000) + 'M' : (s.max_qty >= 1000 ? (s.max_qty / 1000) + 'K' : s.max_qty);
+
+        card.innerHTML = `
+          <div>
+            <div class="srv-title">${s.name}</div>
+            <div class="srv-price">₹${ratePer1k} <span style="font-size:11px;color:var(--muted);font-weight:400;">/ 1000</span></div>
+            <div class="srv-tags">
+              <span class="srv-tag">⚡ Min: ${Number(s.min_qty).toLocaleString()}</span>
+              <span class="srv-tag">🚀 Max: ${maxPretty}</span>
+              <span class="srv-tag">♻ ${s.name.toLowerCase().includes('refill') || s.name.toLowerCase().includes('guarantee') ? '30 Days Refill' : 'No Refill'}</span>
+              <span class="srv-tag">⭐ ${badge.replace('⭐⭐⭐⭐⭐ Premium', 'Premium')}</span>
+              <span class="srv-tag">⏱️ ${s.delivery_time || fastStatus}</span>
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function selectServiceCard(id) {
+      const sel = document.getElementById('serviceSelect');
+      sel.value = id;
+      filterServices();
       updateServiceInfo();
     }
 
