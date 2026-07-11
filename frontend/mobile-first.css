@@ -19,11 +19,15 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  padding-bottom: 70px; /* Space for bottom nav */
+  padding-bottom: 70px;
+  /* Space for bottom nav */
 }
 
 /* Base resets & smooth animations */
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
 
 /* ---- PREMIUM TOP HEADER ---- */
 .nav {
@@ -39,8 +43,13 @@ body {
   z-index: 100 !important;
 }
 
-.logo { font-size: 18px !important; }
-.nav-right { gap: 10px !important; }
+.logo {
+  font-size: 18px !important;
+}
+
+.nav-right {
+  gap: 10px !important;
+}
 
 /* Profile display */
 .nav-profile {
@@ -48,12 +57,17 @@ body {
   align-items: center;
   gap: 8px;
 }
+
 .profile-pic {
-  width: 32px; height: 32px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--accent), #00d4ff);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: bold; font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
 }
 
 .balance-chip {
@@ -64,19 +78,26 @@ body {
   box-shadow: 0 4px 10px rgba(0, 229, 160, 0.1);
 }
 
-.logout-btn { display: none !important; } /* Hidden on mobile header, moved to profile */
+.logout-btn {
+  display: none !important;
+}
+
+/* Hidden on mobile header, moved to profile */
 
 /* ---- FIXED BOTTOM NAV ---- */
 .bottom-nav {
   position: fixed;
-  bottom: 0; left: 0; right: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background: rgba(18, 18, 26, 0.95);
   backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 8px 0 16px 0; /* extra padding for iPhone indicator */
+  padding: 8px 0 16px 0;
+  /* extra padding for iPhone indicator */
   z-index: 1000;
 }
 
@@ -99,16 +120,29 @@ body {
   transition: transform 0.3s, text-shadow 0.3s;
 }
 
-.bnav-item.active { color: var(--accent); }
+.bnav-item.active {
+  color: var(--accent);
+}
+
 .bnav-item.active span.icon {
   transform: translateY(-2px);
   text-shadow: 0 4px 12px rgba(108, 99, 255, 0.5);
 }
 
 /* Hide desktop sidebar */
-.layout { display: block !important; padding: 0 !important; }
-.sidebar { display: none !important; }
-.main { padding: 16px !important; overflow-y: visible !important; }
+.layout {
+  display: block !important;
+  padding: 0 !important;
+}
+
+.sidebar {
+  display: none !important;
+}
+
+.main {
+  padding: 16px !important;
+  overflow-y: visible !important;
+}
 
 /* ---- HOME DASHBOARD CARDS ---- */
 .stats-row {
@@ -119,21 +153,36 @@ body {
 
 .stat-card {
   background: linear-gradient(145deg, rgba(30, 30, 40, 0.6), rgba(20, 20, 25, 0.8)) !important;
-  border: 1px solid rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
   border-radius: 16px !important;
   padding: 16px !important;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
 }
+
 .stat-card:first-child {
   grid-column: 1 / -1;
   background: linear-gradient(135deg, rgba(108, 99, 255, 0.2), rgba(0, 212, 255, 0.1)) !important;
   border-color: rgba(108, 99, 255, 0.3) !important;
 }
-.stat-card:first-child .lbl { color: rgba(255,255,255,0.7) !important; }
-.stat-card:first-child .val { font-size: 32px !important; color: #fff !important; }
 
-.page-title { font-size: 24px !important; margin-bottom: 4px !important; }
-.page-sub { font-size: 13px !important; margin-bottom: 20px !important; }
+.stat-card:first-child .lbl {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.stat-card:first-child .val {
+  font-size: 32px !important;
+  color: #fff !important;
+}
+
+.page-title {
+  font-size: 24px !important;
+  margin-bottom: 4px !important;
+}
+
+.page-sub {
+  font-size: 13px !important;
+  margin-bottom: 20px !important;
+}
 
 /* ---- FORMS & ORDER PAGE ---- */
 .form-card {
@@ -142,47 +191,142 @@ body {
   padding: 0 !important;
   max-width: 100% !important;
 }
-.form-group { margin-bottom: 16px !important; }
-.form-label { font-size: 13px !important; font-weight: 600 !important; color: #d0d0d0 !important; margin-bottom: 8px !important; }
-.form-input, .form-select {
-  padding: 16px !important; border-radius: 16px !important; font-size: 15px !important;
-  background: rgba(255,255,255,0.03) !important; border: 1px solid rgba(255,255,255,0.1) !important;
+
+.form-group {
+  margin-bottom: 16px !important;
 }
-.form-input:focus, .form-select:focus { background: rgba(0,0,0,0.3) !important; border-color: var(--accent) !important; box-shadow: 0 0 0 4px rgba(108,99,255,0.1) !important; }
+
+.form-label {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #d0d0d0 !important;
+  margin-bottom: 8px !important;
+}
+
+.form-input,
+.form-select {
+  padding: 16px !important;
+  border-radius: 16px !important;
+  font-size: 15px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.form-input:focus,
+.form-select:focus {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.1) !important;
+}
 
 /* Sticky Place Order button on mobile */
 .submit-btn {
-  height: 54px !important; border-radius: 16px !important; font-size: 16px !important;
-  background: linear-gradient(90deg, var(--accent), #00d4ff) !important; box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3) !important;
-  position: sticky; bottom: 85px; z-index: 90;
+  height: 54px !important;
+  border-radius: 16px !important;
+  font-size: 16px !important;
+  background: linear-gradient(90deg, var(--accent), #00d4ff) !important;
+  box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3) !important;
+  position: sticky;
+  bottom: 85px;
+  z-index: 90;
 }
+
 .charge-box {
-  background: rgba(0, 229, 160, 0.08) !important; border-radius: 16px !important; border: 1px dashed var(--green) !important;
+  background: rgba(0, 229, 160, 0.08) !important;
+  border-radius: 16px !important;
+  border: 1px dashed var(--green) !important;
 }
 
 /* ---- PREMIUM UI CARDS ---- */
-.service-cards-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+.service-cards-grid {
+  grid-template-columns: 1fr !important;
+  gap: 12px !important;
+}
 
 /* Make tables mobile friendly */
 .table-wrap {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 8px;
 }
-table { display: block; overflow-x: auto; white-space: nowrap; font-size: 14px !important; }
-th { background: rgba(0,0,0,0.2); }
-td, th { padding: 14px 16px !important; }
+
+table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-size: 14px !important;
+}
+
+th {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+td,
+th {
+  padding: 14px 16px !important;
+}
 
 /* ---- RESPONSIVE OVERRIDES (Show desktop strictly on large screens) ---- */
 @media(min-width: 768px) {
-  body { padding-bottom: 0; }
-  .bottom-nav { display: none !important; }
-  .layout { display: flex !important; }
-  .sidebar { display: block !important; }
-  .logout-btn { display: inline-block !important; }
-  .nav-profile { display: none !important; }
-  .service-cards-grid { grid-template-columns: repeat(4, 1fr) !important; }
-  .form-card { background: var(--card) !important; border: 0.5px solid var(--border) !important; padding: 28px !important; max-width: 560px !important; margin: 0 auto; }
-  .submit-btn { position: relative; bottom: auto; }
+  body {
+    padding-bottom: 0;
+  }
+
+  .bottom-nav {
+    display: none !important;
+  }
+
+  .layout {
+    display: flex !important;
+  }
+
+  .sidebar {
+    display: block !important;
+  }
+
+  .logout-btn {
+    display: inline-block !important;
+  }
+
+  .nav-profile {
+    display: none !important;
+  }
+
+  .service-cards-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+
+  .form-card {
+    background: var(--card) !important;
+    border: 0.5px solid var(--border) !important;
+    padding: 28px !important;
+    max-width: 560px !important;
+    margin: 0 auto;
+  }
+
+  .submit-btn {
+    position: relative;
+    bottom: auto;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
 }

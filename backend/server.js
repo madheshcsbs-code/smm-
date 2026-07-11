@@ -242,25 +242,77 @@ app.get('/api/profile', requireAuth, (req, res) => {
   res.json({ success: true, user });
 });
 
+const fs = require('fs');
+const path = require('path');
+
+function isDirWritable(dir) {
+  try {
+    const testFile = path.join(dir, '.write-test-' + Math.random());
+    fs.writeFileSync(testFile, 'test');
+    fs.unlinkSync(testFile);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+let settingsPath = path.resolve('./settings.json');
+if (process.env.VERCEL || process.env.NOW_BUILDER || !isDirWritable(path.dirname(settingsPath))) {
+  const tmpSettingsPath = path.join('/tmp', 'settings.json');
+  if (!fs.existsSync(tmpSettingsPath)) {
+    try {
+      if (fs.existsSync(settingsPath)) {
+        fs.copyFileSync(settingsPath, tmpSettingsPath);
+      } else {
+        fs.writeFileSync(tmpSettingsPath, JSON.stringify({ hideExpensive: false }), 'utf8');
+      }
+    } catch (e) {
+      console.error('Failed to copy settings.json to /tmp:', e);
+    }
+  }
+  settingsPath = tmpSettingsPath;
+}
+
+let siteSettings = { hideExpensive: false };
+try {
+  if (fs.existsSync(settingsPath)) {
+    siteSettings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+  }
+} catch (e) { }
+
 // Get client-side config parameters
 app.get('/api/config', (req, res) => {
   res.json({
     google_client_id: (process.env.GOOGLE_CLIENT_ID || '').trim(),
-    admin_upi_id: (process.env.ADMIN_UPI_ID || 'akcreates@axl').trim()
+    admin_upi_id: (process.env.ADMIN_UPI_ID || 'akcreates@axl').trim(),
+    hideExpensive: siteSettings.hideExpensive
   });
 });
+
+app.post('/api/admin/config', requireSuperAdmin, (req, res) => {
+  siteSettings.hideExpensive = req.body.hideExpensive;
+  fs.writeFileSync(settingsPath, JSON.stringify(siteSettings));
+  res.json({ success: true, hideExpensive: siteSettings.hideExpensive });
+});
+
 
 // =============================================
 // SERVICES ROUTES
 // =============================================
 
 app.get('/api/services', (req, res) => {
-  const services = db.prepare('SELECT * FROM services WHERE active = 1').all();
+  let services = db.prepare('SELECT * FROM services WHERE active = 1').all();
+  if (siteSettings.hideExpensive) {
+    services = services.filter(s => s.rate <= 360);
+  }
   res.json({ success: true, services });
 });
 
 app.get('/api/services/:platform', (req, res) => {
-  const services = db.prepare('SELECT * FROM services WHERE platform = ? AND active = 1').all(req.params.platform);
+  let services = db.prepare('SELECT * FROM services WHERE platform = ? AND active = 1').all(req.params.platform);
+  if (siteSettings.hideExpensive) {
+    services = services.filter(s => s.rate <= 360);
+  }
   res.json({ success: true, services });
 });
 

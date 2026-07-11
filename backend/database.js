@@ -2,7 +2,39 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const dbPath = path.join(__dirname, 'db.json');
+let dbPath = path.join(__dirname, 'db.json');
+
+function isDirWritable(dir) {
+  try {
+    const testFile = path.join(dir, '.write-test-' + Math.random());
+    fs.writeFileSync(testFile, 'test');
+    fs.unlinkSync(testFile);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+if (process.env.VERCEL || process.env.NOW_BUILDER || !isDirWritable(path.dirname(dbPath))) {
+  const tmpDbPath = path.join('/tmp', 'db.json');
+  if (!fs.existsSync(tmpDbPath)) {
+    try {
+      if (fs.existsSync(dbPath)) {
+        fs.copyFileSync(dbPath, tmpDbPath);
+      } else {
+        fs.writeFileSync(tmpDbPath, JSON.stringify({
+          users: [],
+          services: [],
+          orders: [],
+          transactions: []
+        }, null, 2), 'utf8');
+      }
+    } catch (err) {
+      console.error('Failed to copy db.json to /tmp:', err);
+    }
+  }
+  dbPath = tmpDbPath;
+}
 
 function readData() {
   let data = {
