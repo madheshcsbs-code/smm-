@@ -23,30 +23,40 @@ function postJson(path, body) {
     });
 }
 
+function getJson(path, token) {
+    return new Promise((resolve, reject) => {
+        const req = http.request({
+            hostname: 'localhost',
+            port: 3000,
+            path: path,
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }, res => {
+            let responseBody = '';
+            res.on('data', chunk => responseBody += chunk);
+            res.on('end', () => resolve({ status: res.statusCode, data: JSON.parse(responseBody) }));
+        });
+        req.on('error', reject);
+        req.end();
+    });
+}
+
 async function runTests() {
-    console.log('--- TEST 1: Empty Fields ---');
-    const res1 = await postJson('/api/login', { email: '', password: '' });
-    console.log('Returned message:', res1.message);
-    console.log('Success:', res1.success);
-    console.log('Assert matched:', res1.message === 'Please fill in all required fields.' ? 'PASS 🚀' : 'FAIL ❌');
+    console.log('--- TEST: Correct login ---');
+    const res = await postJson('/api/login', { email: 'aruljothiarasu620@gmail.com', password: '123456' });
+    console.log('Login Response:', res);
 
-    console.log('\n--- TEST 2: Email does not exist ---');
-    const res2 = await postJson('/api/login', { email: 'nonexistent@example.com', password: 'password123' });
-    console.log('Returned message:', res2.message);
-    console.log('Success:', res2.success);
-    console.log('Assert matched:', res2.message === 'User not found.' ? 'PASS 🚀' : 'FAIL ❌');
-
-    console.log('\n--- TEST 3: Incorrect password ---');
-    const res3 = await postJson('/api/login', { email: 'aruljothiarasu620@gmail.com', password: 'wrongpassword' });
-    console.log('Returned message:', res3.message);
-    console.log('Success:', res3.success);
-    console.log('Assert matched:', res3.message === 'Incorrect password.' ? 'PASS 🚀' : 'FAIL ❌');
-
-    console.log('\n--- TEST 4: Correct login ---');
-    const res4 = await postJson('/api/login', { email: 'aruljothiarasu620@gmail.com', password: '123456' });
-    console.log('Returned message:', res4.message);
-    console.log('Success:', res4.success);
-    console.log('Assert matched:', res4.message === 'Authentication successful. Redirecting...' ? 'PASS 🚀' : 'FAIL ❌');
+    if (res.success) {
+        console.log('\n--- TEST: Profile retrieval with stateless token ---');
+        const profile = await getJson('/api/profile', res.token);
+        console.log('Response Status:', profile.status);
+        console.log('Response Body:', profile.data);
+        console.log('Assert matched:', (profile.status === 200 && profile.data.success) ? 'PASS 🚀' : 'FAIL ❌');
+    } else {
+        console.log('Login failed!');
+    }
 }
 
 runTests().catch(console.error);

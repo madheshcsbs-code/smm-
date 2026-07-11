@@ -17,8 +17,31 @@ app.use(bodyParser.json());
 app.use(express.static('../frontend'));
 
 // =============================================
-// RAZORPAY SETUP
+// STATELESS TOKEN UTILITIES (supports Vercel serverless)
 // =============================================
+const TOKEN_KEY = crypto.scryptSync(process.env.JWT_SECRET || 'smm-panel-crypto-secret-key-321', 'salt', 32);
+const TOKEN_IV = Buffer.alloc(16, 0);
+
+function generateToken(user) {
+  const cipher = crypto.createCipheriv('aes-256-cbc', TOKEN_KEY, TOKEN_IV);
+  const payload = JSON.stringify({ id: user.id, email: user.email, expires: Date.now() + 2 * 24 * 60 * 60 * 1000 }); // 48h
+  let encrypted = cipher.update(payload, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  return encrypted;
+}
+
+function verifyToken(token) {
+  try {
+    const decipher = crypto.createDecipheriv('aes-256-cbc', TOKEN_KEY, TOKEN_IV);
+    let decrypted = decipher.update(token, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    const payload = JSON.parse(decrypted);
+    if (!payload.expires || payload.expires < Date.now()) return null;
+    return payload; // { id, email }
+  } catch (err) {
+    return null;
+  }
+}
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_YOUR_KEY_HERE',
   key_secret: process.env.RAZORPAY_KEY_SECRET || 'YOUR_SECRET_HERE',
@@ -90,11 +113,8 @@ app.post('/api/login', async (req, res) => {
     return res.json({ success: false, message: 'Incorrect password.' });
   }
 
-  // Simple token (use JWT in production)
-  const token = crypto.randomBytes(32).toString('hex');
-  db.prepare('UPDATE users SET token = ? WHERE id = ?').run(token, user.id);
-
-  await db.syncCloud();
+  // Generate stateless login token
+  const token = generateToken(user);
   res.json({
     success: true,
     message: 'Authentication successful. Redirecting...',
@@ -149,11 +169,8 @@ app.post('/api/auth/google', async (req, res) => {
       console.log(`👤 Automatically registered new Google user: ${email} (Role: ${user.role})`);
     }
 
-    // Generate login token
-    const token = crypto.randomBytes(32).toString('hex');
-    db.prepare('UPDATE users SET token = ? WHERE id = ?').run(token, user.id);
-
-    await db.syncCloud();
+    // Generate stateless login token
+    const token = generateToken(user);
     res.json({
       success: true,
       token,
@@ -197,11 +214,8 @@ app.post('/api/auth/supabase', async (req, res) => {
       console.log(`👤 Automatically registered new Supabase user: ${email}`);
     }
 
-    // Generate login token for our local system
-    const token = crypto.randomBytes(32).toString('hex');
-    db.prepare('UPDATE users SET token = ? WHERE id = ?').run(token, user.id);
-
-    await db.syncCloud();
+    // Generate stateless login token
+    const token = generateToken(user);
     res.json({
       success: true,
       token,
@@ -638,8 +652,11 @@ function requireAuth(req, res, next) {
   const token = req.headers['authorization']?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ success: false, message: 'Login required' });
 
-  const user = db.prepare('SELECT * FROM users WHERE token = ?').get(token);
-  if (!user) return res.status(401).json({ success: false, message: 'Invalid token' });
+  const payload = verifyToken(token);
+  if (!payload) return res.status(401).json({ success: false, message: 'Invalid token' });
+
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(payload.id);
+  if (!user) return res.status(401).json({ success: false, message: 'User not found in DB.' });
 
   req.userId = user.id;
   req.userRole = user.role;
